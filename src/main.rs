@@ -19,7 +19,7 @@ fn main() -> io::Result<()> {
 
     match cli.command {
         args::BasicCommand::Init => config::init_game(&config),
-        args::BasicCommand::Delete => config::delete_game_directory(&mut home_dir),
+        args::BasicCommand::Delete => config::delete_game_directory(&config),
         args::BasicCommand::Status => {
             let mut game = config.load()?;
 

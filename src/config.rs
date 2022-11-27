@@ -64,10 +64,12 @@ pub fn init_game(config: &Config) -> io::Result<()> {
     Ok(())
 }
 
-pub fn delete_game_directory(path: &mut PathBuf) -> io::Result<()> {
-    path.push(GAME_FOLDER_NAME);
-    fs::remove_dir_all(&path)?;
+pub fn delete_game_directory(config: &Config) -> io::Result<()> {
+    fs::remove_dir_all(&config.game_directory)?;
 
-    println!("Successfully removed all files at {}", path.display());
+    println!(
+        "Successfully removed all files at {}",
+        config.game_directory.display()
+    );
     Ok(())
 }

@@ -54,9 +54,7 @@ pub fn init_game(config: &Config) -> io::Result<()> {
         "Successfully created a new game directory at {}",
         config.game_directory.display()
     );
-    config.save(Game {
-        ..Default::default()
-    })?;
+    config.save(Game::new())?;
     println!(
         "Successfully created a new game file at {}",
         config.game_file_path.display()

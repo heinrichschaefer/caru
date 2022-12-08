@@ -150,7 +150,7 @@ mod tests {
         let start_gold: Gold = 2.0;
         let mut gold: Gold = start_gold.clone();
 
-        entity.upgrade(&mut gold);
+        let _ = entity.upgrade(&mut gold);
         let total_cost: Gold = entity.base_upgrade_cost;
 
         assert_eq!(2, entity.level);
@@ -163,9 +163,9 @@ mod tests {
         let start_gold: Gold = 100.0;
         let mut gold: Gold = start_gold.clone();
 
-        entity.upgrade(&mut gold);
-        entity.upgrade(&mut gold);
-        entity.upgrade(&mut gold);
+        let _ = entity.upgrade(&mut gold);
+        let _ = entity.upgrade(&mut gold);
+        let _ = entity.upgrade(&mut gold);
 
         assert_eq!(4, entity.level);
         let total_cost: Gold = entity.base_upgrade_cost

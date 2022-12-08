@@ -8,6 +8,7 @@ use std::{io, process};
 use args::CaruArgs;
 use clap::Parser;
 use config::Config;
+use game::IdleEntityType;
 
 fn main() -> io::Result<()> {
     let home_dir = dirs::home_dir().unwrap_or_else(|| {
@@ -29,5 +30,28 @@ fn main() -> io::Result<()> {
 
             config.save(game)
         }
+        args::BasicCommand::Upgrade(entity_args) => {
+            let mut game = config.load()?;
+            game.update();
+
+            match entity_args.entity {
+                args::IdleEntityArg::All => panic!("Upgrade all is not implemented"),
+                args::IdleEntityArg::Lumberjack(amount_arg) => {
+                    game.upgrade(
+                        IdleEntityType::Lumberjack,
+                        get_amount_from_entity_count_arg(amount_arg),
+                    );
+                }
+            }
+            config.save(game)
+        }
+    }
+}
+
+fn get_amount_from_entity_count_arg(arg: args::EntityCountArg) -> u32 {
+    match arg {
+        args::EntityCountArg::One => 1,
+        args::EntityCountArg::All => u32::MAX,
+        args::EntityCountArg::Amount(n) => n,
     }
 }

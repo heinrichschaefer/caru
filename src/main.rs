@@ -47,6 +47,72 @@ fn main() -> io::Result<()> {
                         game.display_upgrade_info(&IdleEntityType::Lumberjack)
                     };
                 }
+                args::IdleEntityArg::Stonemason(amendment_arg) => {
+                    if let Some(entity_count_arg) = amendment_arg.count {
+                        game.upgrade(
+                            IdleEntityType::Stonemason,
+                            get_amount_from_entity_count_arg(entity_count_arg),
+                        );
+                    };
+                    if amendment_arg.info {
+                        game.display_upgrade_info(&IdleEntityType::Stonemason)
+                    };
+                }
+                args::IdleEntityArg::Bowmaker(amendment_arg) => {
+                    if let Some(entity_count_arg) = amendment_arg.count {
+                        game.upgrade(
+                            IdleEntityType::Bowmaker,
+                            get_amount_from_entity_count_arg(entity_count_arg),
+                        );
+                    };
+                    if amendment_arg.info {
+                        game.display_upgrade_info(&IdleEntityType::Bowmaker)
+                    };
+                }
+                args::IdleEntityArg::Weaponsmith(amendment_arg) => {
+                    if let Some(entity_count_arg) = amendment_arg.count {
+                        game.upgrade(
+                            IdleEntityType::Weaponsmith,
+                            get_amount_from_entity_count_arg(entity_count_arg),
+                        );
+                    };
+                    if amendment_arg.info {
+                        game.display_upgrade_info(&IdleEntityType::Weaponsmith)
+                    };
+                }
+                args::IdleEntityArg::Academic(amendment_arg) => {
+                    if let Some(entity_count_arg) = amendment_arg.count {
+                        game.upgrade(
+                            IdleEntityType::Academic,
+                            get_amount_from_entity_count_arg(entity_count_arg),
+                        );
+                    };
+                    if amendment_arg.info {
+                        game.display_upgrade_info(&IdleEntityType::Academic)
+                    };
+                }
+                args::IdleEntityArg::Catapult(amendment_arg) => {
+                    if let Some(entity_count_arg) = amendment_arg.count {
+                        game.upgrade(
+                            IdleEntityType::Catapult,
+                            get_amount_from_entity_count_arg(entity_count_arg),
+                        );
+                    };
+                    if amendment_arg.info {
+                        game.display_upgrade_info(&IdleEntityType::Catapult)
+                    };
+                }
+                args::IdleEntityArg::King(amendment_arg) => {
+                    if let Some(entity_count_arg) = amendment_arg.count {
+                        game.upgrade(
+                            IdleEntityType::King,
+                            get_amount_from_entity_count_arg(entity_count_arg),
+                        );
+                    };
+                    if amendment_arg.info {
+                        game.display_upgrade_info(&IdleEntityType::King)
+                    };
+                }
             }
             config.save(game)
         }

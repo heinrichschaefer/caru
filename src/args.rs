@@ -33,8 +33,20 @@ pub struct UpgradeEntityArgs {
 pub enum IdleEntityArg {
     /// Upgrade all possible entities
     All,
-    /// Reference the lumberjack entity
+    /// Reference the Lumberjack entity
     Lumberjack(IdleEntityAmendmentArg),
+    /// Reference the Stonemason entity
+    Stonemason(IdleEntityAmendmentArg),
+    /// Reference the Bowmaker entity
+    Bowmaker(IdleEntityAmendmentArg),
+    /// Reference the Weaponsmith entity
+    Weaponsmith(IdleEntityAmendmentArg),
+    /// Reference the Academic entity
+    Academic(IdleEntityAmendmentArg),
+    /// Reference the Catapult entity
+    Catapult(IdleEntityAmendmentArg),
+    /// Reference the King entity
+    King(IdleEntityAmendmentArg),
 }
 
 #[derive(Debug)]

@@ -14,7 +14,7 @@ pub struct IdleEntity {
 
 impl IdleEntity {
     pub fn build(
-        name: &str,
+        name: String,
         base_gold_per_second: Gold,
         base_upgrade_cost: Gold,
         upgrade_cost_factor: f64,
@@ -93,9 +93,9 @@ impl Display for IdleEntity {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{} [{}]: {} g/s.",
-            self.name.as_str(),
+            "[{}] {:<12} {} g/s.",
             self.level,
+            self.name.as_str(),
             self.gold_per_second()
         )
     }

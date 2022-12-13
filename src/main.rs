@@ -36,11 +36,16 @@ fn main() -> io::Result<()> {
 
             match entity_args.entity {
                 args::IdleEntityArg::All => panic!("Upgrade all is not implemented"),
-                args::IdleEntityArg::Lumberjack(amount_arg) => {
-                    game.upgrade(
-                        IdleEntityType::Lumberjack,
-                        get_amount_from_entity_count_arg(amount_arg),
-                    );
+                args::IdleEntityArg::Lumberjack(amendment_arg) => {
+                    if let Some(entity_count_arg) = amendment_arg.count {
+                        game.upgrade(
+                            IdleEntityType::Lumberjack,
+                            get_amount_from_entity_count_arg(entity_count_arg),
+                        );
+                    };
+                    if amendment_arg.info {
+                        game.display_upgrade_info(&IdleEntityType::Lumberjack)
+                    };
                 }
             }
             config.save(game)

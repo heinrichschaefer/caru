@@ -43,6 +43,7 @@ impl Game {
 
         self.last_time_stamp = SystemTime::now();
     }
+
     pub fn upgrade(&mut self, entity_type: IdleEntityType, amount: u32) {
         let mut successful_upgrades = 0;
         while successful_upgrades < amount {
@@ -57,6 +58,30 @@ impl Game {
             successful_upgrades += 1;
         }
         self.display_upgrade_status(successful_upgrades, amount, &entity_type);
+    }
+}
+
+// Display methods
+impl Game {
+    pub fn display_upgrade_info(&self, entity_type: &IdleEntityType) {
+        let entity = match entity_type {
+            IdleEntityType::Lumberjack => &self.idle_entities[0],
+        };
+
+        let quanity = entity.quanity_of_possible_upgrades(&self.current_gold);
+        let total_cost = entity.cost_for_next_upgrades(quanity);
+
+        let indent = " ";
+        println!("Information to upgrade {}:", entity.get_name());
+        println!(
+            "{:>4}{} upgrades [{}] -> [{}]: {:.2} Gold [{:.2} Gold]",
+            indent,
+            entity.get_name(),
+            entity.get_level(),
+            entity.get_level() + quanity,
+            total_cost,
+            self.current_gold
+        );
     }
 
     fn display_upgrade_status(

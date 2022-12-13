@@ -34,7 +34,13 @@ pub enum IdleEntityArg {
     /// Upgrade all possible entities
     All,
     /// Reference the lumberjack entity
-    Lumberjack(EntityCountArg),
+    Lumberjack(IdleEntityAmendmentArg),
+}
+
+#[derive(Debug)]
+pub struct IdleEntityAmendmentArg {
+    pub count: Option<EntityCountArg>,
+    pub info: bool,
 }
 
 #[derive(Debug)]
@@ -43,7 +49,8 @@ pub enum EntityCountArg {
     All,
     Amount(u32),
 }
-impl Args for EntityCountArg {
+
+impl Args for IdleEntityAmendmentArg {
     fn augment_args(cmd: Command) -> Command {
         cmd.arg(
             Arg::new("one")
@@ -67,9 +74,16 @@ impl Args for EntityCountArg {
                 .help("Sets the amount to a user defined value")
                 .action(ArgAction::Set),
         )
+        .arg(
+            Arg::new("info")
+                .short('i')
+                .long("info")
+                .help("Displays the maximum possible quantity to upgrade and the total cost")
+                .action(ArgAction::SetTrue),
+        )
         .group(
             clap::ArgGroup::new("entity_amount")
-                .args(["one", "all", "amount"])
+                .args(["one", "all", "amount", "info"])
                 .required(true),
         )
     }
@@ -97,26 +111,48 @@ impl Args for EntityCountArg {
                 .help("Sets the amount to a user defined value")
                 .action(ArgAction::Set),
         )
+        .arg(
+            Arg::new("info")
+                .short('i')
+                .long("info")
+                .help("Displays the maximum possible quantity to upgrade and the total cost")
+                .action(ArgAction::SetTrue),
+        )
         .group(
             clap::ArgGroup::new("entity_amount")
-                .args(["one", "all", "amount"])
+                .args(["one", "all", "amount", "info"])
                 .required(true),
         )
     }
 }
 
-impl FromArgMatches for EntityCountArg {
+impl FromArgMatches for IdleEntityAmendmentArg {
     fn from_arg_matches(matches: &ArgMatches) -> Result<Self, Error> {
-        if matches.get_flag("one") {
-            return Ok(Self::One);
-        } else if matches.get_flag("all") {
-            return Ok(Self::All);
+        if matches.get_flag("info") {
+            return Ok(Self {
+                info: true,
+                count: None,
+            });
         }
 
-        if let Some(n) = matches.get_one::<u32>("amount") {
-            return Ok(Self::Amount(*n));
+        if matches.get_flag("one") {
+            return Ok(Self {
+                info: false,
+                count: Some(EntityCountArg::One),
+            });
+        } else if matches.get_flag("all") {
+            return Ok(Self {
+                info: false,
+                count: Some(EntityCountArg::All),
+            });
+        } else if let Some(n) = matches.get_one::<u32>("amount") {
+            return Ok(Self {
+                info: false,
+                count: Some(EntityCountArg::Amount(*n)),
+            });
         };
-        Err(Error::new(ErrorKind::Io))
+
+        Err(Error::new(ErrorKind::ValueValidation))
     }
 
     fn update_from_arg_matches(&mut self, _matches: &ArgMatches) -> Result<(), Error> {

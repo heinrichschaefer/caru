@@ -153,9 +153,10 @@ mod tests {
         let mut entity = create_entity();
         entity.add_level(2);
 
+        let gold_per_second = entity.base_gold_per_second * (entity.level + 1) as f64;
         assert!(approx_eq!(
             Gold,
-            entity.base_gold_per_second * entity.level as f64,
+            gold_per_second,
             entity.gold_per_second(),
             ulps = 2
         ))

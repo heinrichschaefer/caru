@@ -1,10 +1,13 @@
-use crate::idle_entity::IdleEntity;
+pub mod idle_entity;
+
 use serde::{Deserialize, Serialize};
 use std::{
     fmt,
     time::{Duration, SystemTime},
     vec,
 };
+
+use self::idle_entity::IdleEntity;
 
 pub type Gold = f64;
 pub enum IdleEntityType {

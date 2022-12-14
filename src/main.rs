@@ -1,7 +1,6 @@
 mod args;
 mod config;
 mod game;
-mod idle_entity;
 
 use std::{io, process};
 

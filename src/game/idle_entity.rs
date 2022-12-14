@@ -89,18 +89,6 @@ impl IdleEntity {
     }
 }
 
-impl Display for IdleEntity {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "[{}] {:<16} {:>8.02} g/s.",
-            self.level,
-            self.name.as_str(),
-            self.gold_per_second()
-        )
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use float_cmp::approx_eq;

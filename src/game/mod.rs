@@ -1,3 +1,4 @@
+pub mod game_state;
 pub mod idle_entity;
 
 use serde::{Deserialize, Serialize};
@@ -7,7 +8,10 @@ use std::{
     vec,
 };
 
-use self::idle_entity::IdleEntity;
+use self::{
+    game_state::{GameInformation, GameState, IdleEntityInformation},
+    idle_entity::IdleEntity,
+};
 
 pub type Gold = f64;
 pub enum IdleEntityType {
@@ -86,19 +90,70 @@ impl Game {
 
 // Game methods
 impl Game {
-    pub fn update(&mut self) {
+    pub fn update(&mut self) -> GameState {
         self.current_delta_time = SystemTime::now()
             .duration_since(self.last_time_stamp)
             .unwrap();
 
+        self.update_gold();
+        self.create_game_state();
+
+        self.last_time_stamp = SystemTime::now();
+
+        self.create_game_state()
+    }
+
+    fn update_gold(&mut self) {
         for entity in &self.idle_entities {
             self.current_gold += entity.get_gold(self.current_delta_time.as_millis())
         }
-
-        self.last_time_stamp = SystemTime::now();
     }
 
-    pub fn upgrade(&mut self, entity_type: IdleEntityType, amount: u32) {
+    pub fn create_game_state(&self) -> GameState {
+        let total_gold_per_second = self
+            .idle_entities
+            .iter()
+            .map(|entity| entity.gold_per_second())
+            .sum();
+
+        let game_information = GameInformation {
+            gold: self.current_gold,
+            gold_per_second: total_gold_per_second,
+        };
+
+        GameState {
+            game_info: game_information,
+            lumberjack_info: self.create_idle_entity_info(0, total_gold_per_second),
+            stonemason_info: self.create_idle_entity_info(1, total_gold_per_second),
+            bowmaker_info: self.create_idle_entity_info(2, total_gold_per_second),
+            weaponsmith_info: self.create_idle_entity_info(3, total_gold_per_second),
+            academic_info: self.create_idle_entity_info(4, total_gold_per_second),
+            catapult_info: self.create_idle_entity_info(5, total_gold_per_second),
+            king_info: self.create_idle_entity_info(6, total_gold_per_second),
+        }
+    }
+
+    fn create_idle_entity_info(
+        &self,
+        idx: usize,
+        total_gold_per_second: f64,
+    ) -> IdleEntityInformation {
+        let upgrade_quanity =
+            self.idle_entities[idx].quanity_of_possible_upgrades(&self.current_gold);
+
+        IdleEntityInformation {
+            name: self.idle_entities[idx].get_name().to_string(),
+            level: self.idle_entities[idx].get_level(),
+            gold_per_second: self.idle_entities[idx].gold_per_second(),
+            gold_per_second_percent: self.idle_entities[idx].gold_per_second()
+                / total_gold_per_second,
+            maximum_upgrade_quantity: upgrade_quanity,
+            upgrade_cost_next: self.idle_entities[idx].cost_for_next_upgrade(),
+            upgrade_cost_max: self.idle_entities[idx].cost_for_next_upgrades(upgrade_quanity),
+        }
+    }
+
+    pub fn upgrade(&mut self, entity_type: IdleEntityType, amount: u32) -> u32 {
         let mut successful_upgrades = 0;
         while successful_upgrades < amount {
             let result = match entity_type {
@@ -119,70 +174,10 @@ impl Game {
 
             successful_upgrades += 1;
         }
-        self.display_upgrade_status(successful_upgrades, amount, &entity_type);
-    }
-}
-
-// Display methods
-impl Game {
-    pub fn display_upgrade_info(&self, entity_type: &IdleEntityType) {
-        let entity = match entity_type {
-            IdleEntityType::Lumberjack => &self.idle_entities[0],
-            IdleEntityType::Stonemason => &self.idle_entities[1],
-            IdleEntityType::Bowmaker => &self.idle_entities[2],
-            IdleEntityType::Weaponsmith => &self.idle_entities[3],
-            IdleEntityType::Academic => &self.idle_entities[4],
-            IdleEntityType::Catapult => &self.idle_entities[5],
-            IdleEntityType::King => &self.idle_entities[6],
-        };
-
-        let quanity = entity.quanity_of_possible_upgrades(&self.current_gold);
-        let total_cost = entity.cost_for_next_upgrades(quanity);
-
-        let indent = " ";
-        println!("Information to upgrade {}:", entity.get_name());
-        println!(
-            "{:>4}{} upgrades [{}] -> [{}]: {:.2} Gold [{:.2} Gold]",
-            indent,
-            entity.get_name(),
-            entity.get_level(),
-            entity.get_level() + quanity,
-            total_cost,
-            self.current_gold
-        );
+        successful_upgrades
     }
 
-    fn display_upgrade_status(
-        &self,
-        successful_upgrades: u32,
-        amount_to_upgrade: u32,
-        entity_type: &IdleEntityType,
-    ) {
-        let entity_name = match entity_type {
-            IdleEntityType::Lumberjack => self.idle_entities[0].get_name(),
-            IdleEntityType::Stonemason => self.idle_entities[1].get_name(),
-            IdleEntityType::Bowmaker => self.idle_entities[2].get_name(),
-            IdleEntityType::Weaponsmith => self.idle_entities[3].get_name(),
-            IdleEntityType::Academic => self.idle_entities[4].get_name(),
-            IdleEntityType::Catapult => self.idle_entities[5].get_name(),
-            IdleEntityType::King => self.idle_entities[6].get_name(),
-        };
-
-        println!(
-            "Successfully upgraded {}/{} {}",
-            successful_upgrades, amount_to_upgrade, entity_name
-        )
-    }
-
-    pub fn display_status(&self) {
-        let indent = " ";
-        println!(
-            "[Game Status] - Time passed since last check: [{:?}]",
-            self.current_delta_time
-        );
-        println!("{:>4}Current Gold: {:.2} Gold", indent, self.current_gold);
-        for entity in &self.idle_entities {
-            println!("{:>8}{}", indent, entity);
-        }
+    pub fn get_delta_time(&self) -> &Duration {
+        &self.current_delta_time
     }
 }
